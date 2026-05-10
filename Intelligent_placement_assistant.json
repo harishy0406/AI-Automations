@@ -1,0 +1,291 @@
+{
+  "name": "Intelligent_placement_assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "binaryPropertyName": "attachment_0",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -576,
+        0
+      ],
+      "id": "f2e4d3e7-b099-4793-b017-f074f8dac778",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {
+          "q": "(shortlisted OR applied OR placement OR assessment OR interview OR coding OR aptitude OR \"test link\" OR \"test date\" OR venue OR location OR \"on campus\" OR online) has:attachment"
+        },
+        "options": {
+          "downloadAttachments": true
+        }
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -784,
+        0
+      ],
+      "id": "f9eb57eb-10c5-4a28-b51a-ede16d46f0b2",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "uqNkkV9xh4y1Kvv9",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "=You are an intelligent placement assistant for college recruitment updates.\n\nThe student has already been confirmed as shortlisted using their NeoPat ID fetched from the shortlisted candidates attachment.\n\nYour task is to analyze the placement email carefully and generate a short, professional, visually appealing Telegram notification message.\n\nFirst determine whether the email is about:\n\n* Online Assessment / Test Round\n  OR\n* Interview Round\n\nThen generate the message accordingly.\n\nExtract the following details if available:\n\n* Company Name\n* Role\n* Round Type (Assessment/Test/Interview)\n* Test or Interview Date\n* Test or Interview Time\n* Venue or Location\n* Interview Mode (Online / On Campus Labs / Own Location)\n* Assessment/Test/Meeting Link\n* Important Instructions(2 main points)\n\nRules:\n\n* Start with a short congratulation message.\n* Keep the message short, clean, and crisp.\n* Use professional emojis.\n* Do NOT include unnecessary paragraphs.\n* If some detail is missing, skip that field.\n* If it is an assessment round, focus on test details.\n* If it is an interview round, focus on interview details.\n* Make the formatting Telegram-friendly.\n\nExample style:\n\n🎉 Congratulations! You have been shortlisted.\n\n🏢 Company: XYZ\n📝 Round: Online Assessment\n📅 Date: DD-MM-YYYY\n⏰ Time: HH:MM\n📍 Location: Own Location\n💻 Mode: Online\n\n⚠️ Important:\n\n* Keep stable internet\n* Join 10 mins early\n\nEMAIL SUBJECT:\n{{ $('Gmail Trigger').item.json.subject }}\n\nEMAIL BODY:\n{{ $('Gmail Trigger').item.json.text }}\n\nReturn ONLY the final formatted Telegram message.\n",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "company",
+              "description": "Company name"
+            },
+            {
+              "name": "role",
+              "description": "Job role"
+            },
+            {
+              "name": "test_date",
+              "description": "Assessment/interview date"
+            },
+            {
+              "name": "test_time",
+              "description": "Test/interview time"
+            },
+            {
+              "name": "location",
+              "description": "Venue or location"
+            },
+            {
+              "name": "mode",
+              "description": "Online or On Campus"
+            },
+            {
+              "name": "assessment_link",
+              "description": "Assessment URL"
+            },
+            {
+              "name": "instructions",
+              "description": "Important instructions"
+            },
+            {
+              "name": "formatted_message",
+              "description": "Final formatted Telegram message"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        32,
+        -16
+      ],
+      "id": "28308403-f51d-44ee-ab1d-388a25be69f7",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        32,
+        176
+      ],
+      "id": "cb8f6a31-34d9-46cc-aba6-443b973d89f0",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "cL6IXDbOghDFbSYT",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "2039971081",
+        "text": "={{$json.output.formatted_message}}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        448,
+        -16
+      ],
+      "id": "01b9cd34-5112-40be-b878-b410b3b82d02",
+      "name": "Send a text message",
+      "webhookId": "fe33828c-612f-4cf8-81bc-e150b0c1d3f5",
+      "credentials": {
+        "telegramApi": {
+          "id": "5yK1o3mERKD4I7sl",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "2c3e7be3-5211-4d73-a2d0-caa6dc3659e1",
+              "leftValue": "={{$json.selected}}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -192,
+        0
+      ],
+      "id": "d5017f2e-c942-42ba-896b-129715afe159",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "jsCode": "const MY_ID = \"K2Q0M802\".toLowerCase().trim();\n\nlet selected = false;\n\nfor (const item of $input.all()) {\n\n  const values = Object.values(item.json).map(v =>\n    String(v).toLowerCase().trim()\n  );\n\n  if (values.includes(MY_ID)) {\n    selected = true;\n    break;\n  }\n}\n\nreturn [\n  {\n    json: {\n      selected\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -384,
+        0
+      ],
+      "id": "c0bcbe77-d663-4767-8fd6-1795499f2e86",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "content": "#### Intelligent Placement Assistant\n*AI-powered Placement Assistant that automatically tracks your placement emails and sends instant Telegram alerts for shortlisted results, assessments, interviews, test links, dates, venues, and important instructions.*\n\n*~ M Harish Gautham*",
+        "height": 144,
+        "width": 512,
+        "color": "#63D11A"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -768,
+        -176
+      ],
+      "typeVersion": 1,
+      "id": "af4a89b0-e7bb-4bd6-a5a2-65afeacd6feb",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "3db549f4-eed9-4344-acd2-a503a40c9bf2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4f4fbc9f7bca32bebbe3ed8238476e90d647868cf3a9de4ccc2cc0beabdbe6e7"
+  },
+  "id": "hGnlqPW0Ji2W8mdD",
+  "tags": []
+}
