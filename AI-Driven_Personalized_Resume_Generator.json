@@ -1,0 +1,379 @@
+{
+  "name": "AI-Driven_Personalized_Resume_Generator",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -432,
+        -128
+      ],
+      "id": "a4de5be8-c56d-4af9-8c8c-63c21a27b3dc",
+      "name": "Telegram Trigger",
+      "webhookId": "57bd5dce-7b0b-453c-bd12-bb221a59f1ea",
+      "credentials": {
+        "telegramApi": {
+          "id": "5yK1o3mERKD4I7sl",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nfor (const item of items) {\n\n  // AI response text\n  const latexContent =\n    item.json.output ||\n    item.json.text ||\n    JSON.stringify(item.json);\n\n  // Create txt file binary\n  item.binary = {\n    data: await this.helpers.prepareBinaryData(\n      Buffer.from(latexContent, 'utf8'),\n      'Modified_resume.tex'\n    )\n  };\n}\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        688,
+        -32
+      ],
+      "id": "5e223a83-afc6-405e-8eba-99cc5c5a9fcd",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "sendDocument",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "binaryData": true,
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        912,
+        -32
+      ],
+      "id": "85684f82-5ba2-4636-b8f4-fe60d04d91a3",
+      "name": "Send a document",
+      "webhookId": "e6f8a04b-ccdb-4c53-8977-9e6ab07998b9",
+      "credentials": {
+        "telegramApi": {
+          "id": "5yK1o3mERKD4I7sl",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bcc2dfbf-dd1d-4f94-98d2-140edd12ede0",
+              "name": "chat_id",
+              "value": "={{$json.message.chat.id}}",
+              "type": "string"
+            },
+            {
+              "id": "4d11195b-4481-425d-b466-c1c4a950771a",
+              "name": "jd_text",
+              "value": "={{ $json.message.text || \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "ca2f9f86-bd95-4095-bf3c-b9fefa6d4c16",
+              "name": "jd_file_id",
+              "value": "={{ $json.message.document.file_id || \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "932061ca-6153-4fdb-81c2-20131d63f63f",
+              "name": "resume_data",
+              "value": "{   \"personalInfo\": {     \"fullName\": \"M HARISH GAUTHAM\",     \"location\": \"Bengaluru, India\",     \"phone\": \"+91 7889289504\",     \"email\": \"harivelgm76@gmail.com\",     \"linkedin\": \"linkedin.com/harishy46\",     \"github\": \"github.com/harishy0406\"   },   \"summary\": \"Integrated M.Tech Software Engineering student skilled in Python, C++, and SQL with strong foundations in machine learning, LLMs, and system design. Experienced in building scalable AI/ML pipelines, RAG-based applications, and FastAPI backend systems. Focused on developing production-ready AI solutions for real-time analytics & data-driven decision-making.\",   \"skills\": {     \"programming\": [       \"Python\",       \"C++\",       \"SQL\",       \"Java\",       \"R\"     ],     \"corecs\": [       \"Data Structures & Algorithms\",       \"Operating Systems\",       \"Object-Oriented Programming\"     ],     \"aimlLlmEngineering\": [       \"Pandas\",       \"Scikit-learn\",       \"LLM APIs (OpenAI)\",       \"LangChain\",       \"LangGraph\",       \"RAG\",       \"AI Agents\"     ],     \"vectorSearchDatabases\": [       \"FAISS\",       \"Chroma\",       \"MySQL\",       \"PostgreSQL\",       \"MongoDB\"     ],     \"backendApis\": [       \"FastAPI\",       \"Flask\",       \"REST APIs\",       \"Async Programming (asyncio)\",       \"Microservices Architecture\"     ],     \"dataEngineering\": [       \"ETL Pipelines\",       \"SQL Analytics\",       \"Kafka\",       \"Spark\",       \"Hadoop\",       \"Hive\"     ],     \"systemsPerformance\": [       \"Threading\",       \"Multiprocessing\",       \"Caching (Redis)\",       \"Performance Optimization\"     ],     \"cloudDevops\": [       \"Linux\",       \"Docker\",       \"AWS (EC2)\",       \"CI/CD (GitHub Actions/Jenkins)\",       \"Git\",       \"Kubernetes\"     ],     \"tools\": [       \"Postman\",       \"Power BI\",       \"Pytest\",       \"n8n\",       \"Jira\",       \"JMeter\",       \"Selenium\",       \"SonarQube\"     ],     \"problemSolving\": \"Solved 100+ DSA problems on LeetCode and CodeChef\"   },   \"experience\": [     {       \"position\": \"Data Science Intern\",       \"company\": \"Sudaku CodeClause Pvt Ltd\",       \"location\": \"Pune\",       \"duration\": {         \"startMonth\": \"Dec\",         \"startYear\": 2025,         \"endMonth\": \"Jan\",         \"endYear\": 2026       },       \"department\": \"Backend & Data Systems\",       \"responsibilities\": [         {           \"title\": \"ML Pipelines & Data Processing\",           \"description\": \"Engineered end-to-end ML pipelines for Intelligent Fraud Detection and Heart Disease Risk Assessment with data preprocessing, feature engineering, and model evaluation on 1M+ records, achieving 91% accuracy (ROC-AUC: 0.94).\"         },         {           \"title\": \"ETL & API Development\",           \"description\": \"Designed and optimized ETL pipelines for large-scale data processing & built Flask REST APIs for real-time inference, containerized with Docker and deployed on AWS EC2, ensuring scalable data flow, reliable model serving, and efficient request handling.\"         },         {           \"title\": \"Backend Systems & CI/CD\",           \"description\": \"Collaborated with cross-functional teams to develop modular backend systems, optimize SQL queries, and integrate CI/CD pipelines and automated testing, improving code quality, deployment reliability, and system performance.\"         },         {           \"title\": \"Reporting & Insights\",           \"description\": \"Analyzed results and communicated insights through reports, supporting data-driven decisions and earned Letter of Recommendation.\"         }       ]     }   ],   \"projects\": [     {       \"title\": \"AI-powered Customer Support Copilot\",       \"technologies\": [         \"Python\",         \"FastAPI\",         \"LangChain\",         \"FAISS\",         \"OpenAI\",         \"SQL\"       ],       \"link\": \"LINK\",       \"highlights\": [         {           \"title\": \"RAG System Implementation\",           \"description\": \"Built an LLM-powered customer support system using RAG pipelines (chunking, embeddings, vector search) to answer queries from knowledge bases, integrating OpenAI APIs for contextual responses with optimized retrieval and low-latency performance.\"         },         {           \"title\": \"FastAPI Integration\",           \"description\": \"Developed FastAPI-based async APIs integrating OpenAI LLMs for query handling, summarization, and response generation, enabling scalable request processing with optimized retrieval workflows and efficient API performance.\"         },         {           \"title\": \"Performance Optimization\",           \"description\": \"Implemented caching (Redis) and performance tuning to reduce response latency, with testing, logging, and modular backend design for scalable deployment.\"         }       ]     },     {       \"title\": \"Smart Legal Document Intelligence System\",       \"technologies\": [         \"Python\",         \"FastAPI\",         \"LangChain\",         \"Chroma\",         \"OpenAI\"       ],       \"link\": \"LINK\",       \"highlights\": [         {           \"title\": \"RAG-based Document Processing\",           \"description\": \"Developed a RAG-based system to process legal PDFs for semantic search, summarization, and clause extraction.\"         },         {           \"title\": \"Vector DB Integration\",           \"description\": \"Built LLM-powered pipelines using OpenAI APIs and vector DB (Chroma) for contextual querying and retrieval.\"         },         {           \"title\": \"Agentic Workflows\",           \"description\": \"Designed agentic workflows with n8n to automate document processing, risk detection, and report generation.\"         }       ]     },     {       \"title\": \"Agentic AI Task Automation System\",       \"technologies\": [         \"Python\",         \"LangGraph\",         \"n8n\",         \"OpenAI\",         \"FastAPI\"       ],       \"link\": \"LINK\",       \"highlights\": [         {           \"title\": \"Multi-step Workflow Orchestration\",           \"description\": \"Built an agent-based automation system using LangGraph and LLM APIs to orchestrate multi-step workflows for task execution.\"         },         {           \"title\": \"Async Service Integration\",           \"description\": \"Integrated FastAPI-based async services for real-time task handling, API orchestration, and external system integration.\"         },         {           \"title\": \"Pipeline Optimization\",           \"description\": \"Implemented modular pipelines with logging, testing, and performance optimization for reliable AI workflow execution.\"         }       ]     },     {       \"title\": \"Real-Time AI Analytics & Alerting System\",       \"technologies\": [         \"Python\",         \"Kafka\",         \"FastAPI\",         \"Redis\",         \"SQL\"       ],       \"link\": \"LINK\",       \"highlights\": [         {           \"title\": \"Real-time Stream Processing\",           \"description\": \"Developed a real-time analytics system using Kafka streams and ML models to detect anomalies in high-volume data pipelines.\"         },         {           \"title\": \"Low-latency Alerting\",           \"description\": \"Built FastAPI-based async APIs with Redis caching for low-latency alerts, efficient data retrieval and scalable data processing.\"         }       ]     }   ],   \"awards\": [     {       \"title\": \"1st Prize — Prince iSOLVE National Hackathon\",       \"year\": 2026,       \"projectName\": \"MapMyWaste\",       \"description\": \"Led development of MapMyWaste, an AI-powered geospatial waste detection system using CNN-based classification, feature extraction, and K-Means clustering with EXIF GPS data to identify hotspots; built data pipelines, inference workflows, and APIs for automated detection, spatial analysis, optimized routing, and real-time data processing.\"     }   ],   \"education\": [     {       \"degree\": \"Integrated M.Tech in Software Engineering\",       \"institution\": \"Vellore Institute of Technology\",       \"location\": \"Vellore, Tamil Nadu\",       \"duration\": {         \"startYear\": 2022,         \"endYear\": 2027       },       \"cgpa\": 8.19,       \"relevantCoursework\": [         \"Machine Learning\",         \"Data Analytics\",         \"Data Structures & Algorithms\",         \"DBMS\",         \"Operating Systems\",         \"Computer Networks\",         \"Distributed Systems\",         \"Software Engineering\"       ]     },     {       \"degree\": \"Higher Secondary (Science + Computer Science)\",       \"institution\": \"Kendriya Vidyalaya No. 4 Mamoon Cantt\",       \"location\": \"Pathankot, Punjab\",       \"duration\": {         \"startYear\": 2020,         \"endYear\": 2021       },       \"percentage\": 89.6     }   ] }",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -288,
+        -128
+      ],
+      "id": "e1cf2247-da22-47d6-b7e8-c9acf5dd4af9",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=RESUME DATA:\n{{ JSON.stringify($json.resume_data) }}\n\nJOB DESCRIPTION:\n{{ $json.jd_text }}",
+        "options": {
+          "systemMessage": "# UNIFIED FAANG-LEVEL ATS-OPTIMIZED RESUME ARCHITECTURE PROMPT\n\n## ROLE DEFINITION\nYou are an elite FAANG-level resume architect and ATS optimization expert. Your task is to generate a COMPLETE production-ready LaTeX resume customized for the provided Job Description, optimized for both human recruiters and ATS systems.\n\n---\n\n## MANDATORY OUTPUT RULES\n- Output ONLY valid LaTeX code.\n- Do NOT explain anything.\n- Do NOT use markdown.\n- Do NOT wrap output inside ```latex.\n- Return ONLY raw LaTeX.\n- Output must compile successfully in Overleaf without modification.\n- Never generate incomplete LaTeX.\n- Never omit \\begin{document} or \\end{document}.\n- Never use placeholder text.\n- Escape all LaTeX special characters properly.\n\n---\n\n## FIXED DOCUMENT FORMATTING (ABSOLUTELY NON-NEGOTIABLE)\n\n### Document Class & Packages\n\nUse EXACTLY this document setup:\n```\n\\documentclass[letterpaper,9pt]{article}\n```\n\nPackages MUST remain EXACTLY:\n```\n\\usepackage{latexsym}\n\\usepackage[empty]{fullpage}\n\\usepackage{titlesec}\n\\usepackage[usenames,dvipsnames]{color}\n\\usepackage{enumitem}\n\\usepackage[hidelinks]{hyperref}\n\\usepackage{fancyhdr}\n\\usepackage[english]{babel}\n\\usepackage{tabularx}\n\\input{glyphtounicode}\n```\n\n### Page Setup\n\nPage formatting MUST remain EXACTLY:\n```\n\\pagestyle{fancy}\n\\fancyhf{}\n\\fancyfoot{}\n\\renewcommand{\\headrulewidth}{0pt}\n\\renewcommand{\\footrulewidth}{0pt}\n```\n\nMargins MUST remain EXACTLY:\n```\n\\addtolength{\\oddsidemargin}{-0.6in}\n\\addtolength{\\textwidth}{1.19in}\n\\addtolength{\\topmargin}{-.8in}\n\\addtolength{\\textheight}{1.6in}\n```\n\nSpacing MUST remain EXACTLY:\n```\n\\raggedbottom\n\\raggedright\n\\setlength{\\tabcolsep}{0in}\n```\n\n### Section Formatting\n\nSection formatting MUST remain EXACTLY:\n```\n\\titleformat{\\section}{\n  \\vspace{-6pt}\\scshape\\raggedright\\large\\bfseries\n}{}{0em}{}[\\titlerule \\vspace{-5pt}]\n```\n\n### Unicode & Custom Commands\n\nUnicode MUST remain:\n```\n\\pdfgentounicode=1\n```\n\nCustom commands/macros MUST remain EXACTLY:\n```\n\\newcommand{\\resumeItem}[1]{\\item\\small{#1 \\vspace{-2pt}}}\n\n\\newcommand{\\resumeSubheading}[4]{\n  \\vspace{-2pt}\\item\n    \\begin{tabular*}{\\textwidth}[t]{l@{\\extracolsep{\\fill}}r}\n      \\textbf{#1} & \\textbf{\\small #2} \\\\\n      \\textit{\\small #3} & \\textit{\\small #4} \\\\\n    \\end{tabular*}\\vspace{-6pt}\n}\n\n\\newcommand{\\resumeProjectHeading}[2]{\n    \\item\n    \\begin{tabular*}{\\textwidth}{l@{\\extracolsep{\\fill}}r}\n      \\small #1 & \\textbf{\\small #2}\\\\\n    \\end{tabular*}\\vspace{-6pt}\n}\n\n\\newcommand{\\resumeItemListStart}{\\begin{itemize}[leftmargin=*]}\n\\newcommand{\\resumeItemListEnd}{\\end{itemize}\\vspace{-5pt}}\n\n\\newcommand{\\resumeSubHeadingListStart}{\\begin{itemize}[leftmargin=0in, label={}]}\n\n\\newcommand{\\resumeSubHeadingListEnd}{\\end{itemize}}\n```\n\n---\n\n## STRICT VISUAL RULES (MAINTAIN EXACT AESTHETICS)\n- Keep EXACT same font sizing.\n- Keep EXACT same visual density.\n- Keep EXACT same section spacing.\n- Keep EXACT same bullet spacing.\n- Keep EXACT same margin layout.\n- Keep EXACT same heading style.\n- Keep EXACT same one-page compact layout.\n- Keep EXACT same hyperlink style.\n- Keep EXACT same alignment structure.\n- Keep EXACT same ATS-friendly formatting.\n- Never add colors.\n- Never add tables outside template.\n- Never add icons.\n- Never add graphics.\n- Never add multi-column layouts.\n- Never exceed one page.\n\n---\n\n## RESUME CONTENT OPTIMIZATION RULES\n\n### Deep JD Analysis & Extraction\n- Extract ALL ATS keywords from the Job Description.\n- Identify primary technical domains (Backend, AI/ML, Data Engineering, Full-Stack, Cloud, Distributed Systems, etc.).\n- Extract required skills, tools, frameworks, methodologies, and cloud services.\n- Understand required experience level and seniority indicators.\n- Identify domain-specific technical terminology.\n\n### Content Enhancement & Rewriting\nYou MUST:\n- Prioritize relevant technical skills based on JD emphasis.\n- Reorder experience and projects based on JD relevance (most relevant first).\n- Rewrite all bullets using strong, active action verbs (Engineered, Architected, Designed, Optimized, Developed, Integrated, Deployed, etc.).\n- Add measurable impact metrics where realistic (performance improvements, scalability numbers, accuracy percentages, latency reductions, throughput increases).\n- Enhance technical depth with specific technologies and methodologies.\n- Tailor professional summary specifically for the role and JD keywords.\n- Emphasize backend, AI/ML, cloud, distributed systems, data engineering, or full-stack skills depending on JD focus.\n- Remove irrelevant or weak content that doesn't align with JD.\n- Restructure bullets for ATS parsing (clear technical keywords, strong verbs, metrics).\n- Ensure resume projects demonstrate FAANG-level engineering practices.\n\n---\n\n## INTELLIGENT ATS KEYWORD ENRICHMENT RULES\n\nYou are ALLOWED to intelligently add INDUSTRY-STANDARD ATS keywords, technologies, frameworks, tools, methodologies, cloud services, databases, APIs, engineering concepts, DevOps tools, and software engineering terminology EVEN IF they are not explicitly present in the provided resume JSON.\n\n### Enrichment Guidelines\n- Added technologies MUST be logically adjacent to the candidate's existing profile and skill set.\n- Add ONLY realistic technologies that a strong Software Engineering / AI / Backend / Full Stack / Data Engineering student could reasonably know.\n- You may enrich technical stacks using related technologies commonly expected in the industry.\n\n### Enrichment Examples (NOT Exhaustive)\n- If candidate knows **Python** → may add: FastAPI, AsyncIO, NumPy, PyTorch basics, REST APIs, type hints, decorators.\n- If candidate knows **Docker/Kubernetes** → may add: container orchestration, microservices architecture, service mesh, pod scheduling, helm charts.\n- If candidate knows **ML/LLMs** → may add: vector embeddings, prompt engineering, transformers, inference pipelines, model serving, token optimization.\n- If candidate knows **Distributed Systems** → may add: message queues, caching strategies, stream processing, observability, distributed tracing.\n- If candidate knows **Backend APIs** → may add: API authentication, rate limiting, caching layers, API gateways, load balancing, circuit breakers.\n- If candidate knows **Kafka/Spark** → may add: stream processing, batch processing, data lineage, exactly-once semantics, partition strategies.\n- If candidate knows **AWS** → may add: VPC, IAM, CloudWatch, Lambda, RDS, S3, CloudFront, Auto Scaling Groups.\n- If candidate knows **SQL/Databases** → may add: query optimization, indexing strategies, ACID properties, sharding, replication.\n- If candidate knows **Testing** → may add: unit testing, integration testing, mocking, test coverage, performance testing.\n\n### Enrichment Constraints\n- Added technologies MUST remain believable and authentic.\n- Never overload the resume unnaturally or keyword-stuff.\n- Maintain logical consistency with candidate's skill progression.\n- Ensure added technologies naturally integrate with project descriptions.\n- All enrichments must enhance ATS optimization while preserving authenticity.\n\n---\n\n## JD-MATCHED PROJECT GENERATION RULES\n\n### When to Generate\nIf the Job Description strongly emphasizes a domain/technology not sufficiently represented in the existing projects, you MAY generate ONE additional intermediate-to-advanced realistic project tailored specifically for the JD.\n\n### Generated Project Requirements\nThe generated project MUST:\n- Sound production-grade and industry-realistic.\n- Match the candidate's experience level (not research-level or overly academic).\n- Use technologies and methodologies aligned with the JD.\n- Include scalable engineering concepts and distributed systems thinking.\n- Include measurable technical impact (performance metrics, scalability, efficiency gains).\n- Be ATS optimized with strong keywords and action verbs.\n- Follow EXACT same project formatting style as existing projects.\n- Blend naturally with the resume without appearing artificially inserted.\n\n### Generated Project Examples (Guidance)\n- **Backend-focused JD** → Scalable REST API platform, microservices authentication system, distributed cache layer, API rate-limiting service.\n- **AI/LLM-focused JD** → RAG-based document analysis system, multi-agent orchestration platform, inference optimization pipeline, embedding-based semantic search.\n- **Data Engineering JD** → Kafka-Spark ETL pipeline for real-time analytics, distributed data warehouse ingestion system, stream processing anomaly detection.\n- **Full-Stack JD** → SaaS dashboard with real-time collaboration, multi-tenant platform with role-based access control.\n- **Cloud/DevOps JD** → Containerized microservices deployment platform, observability and monitoring system, CI/CD pipeline orchestration.\n\n### Generation Constraints\n- Generated project MUST NOT sound fake, exaggerated, or research-level.\n- Keep within reasonable scope for internship/student-level experience.\n- Ensure technical accuracy and realistic implementation details.\n- Blend with existing projects seamlessly.\n- Maximum ONE additional project per resume.\n\n---\n\n## SMART ATS ENRICHMENT INTEGRATION\n\nNaturally inject the following WITHOUT making the resume look keyword-stuffed or artificial:\n\n### Engineering Terminology\n- System design concepts (scalability, load balancing, fault tolerance, high availability)\n- Backend architecture patterns (microservices, service-oriented architecture, event-driven)\n- API engineering terminology (RESTful design, async patterns, rate limiting, circuit breakers)\n- Database concepts (normalization, indexing, partitioning, replication, sharding)\n\n### Performance & Optimization\n- Scalability terminology (horizontal scaling, vertical scaling, load distribution)\n- Performance optimization (latency reduction, throughput optimization, memory efficiency, caching strategies)\n- Monitoring & observability (logging, tracing, metrics collection, alerting, dashboards)\n\n### AI/ML & Data Engineering\n- AI/ML pipeline terminology (feature engineering, model evaluation, inference, model serving, A/B testing)\n- Vector search and embeddings (semantic search, similarity matching, vector databases)\n- Data engineering concepts (ETL, ELT, streaming, batch processing, data lineage, data quality)\n\n### Cloud & DevOps\n- Cloud-native terminology (containerization, orchestration, auto-scaling, managed services)\n- DevOps practices (CI/CD, infrastructure as code, deployment automation, monitoring)\n- Distributed systems concepts (message queues, eventual consistency, distributed tracing)\n\n---\n\n## CONTENT RULES (INTEGRITY & AUTHENTICITY)\n- Do NOT invent fake companies, internships, achievements, or publications.\n- Only improve, optimize, and enhance provided information.\n- Keep all achievements realistic and verifiable.\n- Maintain professional engineering tone throughout.\n- Ensure technical claims are defensible.\n- Add context and specificity to vague claims.\n- Quantify impact wherever possible with realistic metrics.\n\n---\n\n## RESUME STRUCTURE TEMPLATE\n\nYour generated LaTeX resume should include sections in this order:\n\n1. **Header** (Name, Location, Contact, Links)\n2. **Professional Summary** (JD-tailored, 2-3 lines max)\n3. **Technical Skills** (Organized by category, ATS-optimized)\n4. **Professional Experience** (Ordered by JD relevance)\n5. **Projects** (Ordered by JD relevance, including any generated projects)\n6. **Awards & Recognition** (If applicable)\n7. **Education** (Degree, Institution, Relevant Coursework, GPA/Percentage)\n\n---\n\n## FINAL SUCCESS CRITERIA\n\nThe generated resume MUST:\n- ✅ Look written by a top-tier FAANG candidate.\n- ✅ Aggressively pass ATS screening with keyword optimization.\n- ✅ Match the JD closely in terminology, skills, and focus areas.\n- ✅ Remain believable, authentic, and realistic.\n- ✅ Maintain clean one-page formatting without compromise.\n- ✅ Preserve exact LaTeX visual style and spacing.\n- ✅ Compile successfully in Overleaf or any LaTeX environment.\n- ✅ Use strong action verbs and measurable metrics throughout.\n- ✅ Demonstrate FAANG-level engineering practices and thinking.\n- ✅ Be optimized for both human recruiters and ATS parsers.\n\n---\n\n## WORKFLOW\n\n1. **Receive Inputs:**\n   - Job Description text\n   - Resume JSON data\n   - (Optional) Existing resume template structure\n\n2. **Analyze JD:**\n   - Extract keywords, required skills, technologies, experience level, domain focus.\n   - Identify gaps between candidate's resume and JD requirements.\n\n3. **Optimize Content:**\n   - Rewrite bullets with strong verbs and metrics.\n   - Reorder sections and projects by JD relevance.\n   - Add realistic ATS keywords and technologies.\n   - Enhance technical depth.\n   - Evaluate if one additional project is needed based on JD emphasis.\n\n4. **Generate LaTeX:**\n   - Use exact formatting rules with no deviations.\n   - Integrate all optimizations seamlessly.\n   - Ensure one-page limit.\n   - Compile-ready output.\n\n5. **Deliver:**\n   - Output ONLY raw LaTeX code (no explanations, no markdown).\n   - Ready to paste directly into Overleaf.\n   - No modifications needed.\n\n---\n\n## EXECUTION INSTRUCTION\n\nYou will be provided with:\n1. A Job Description\n2. Resume JSON data (already provided)\n3. Request to generate ATS-optimized LaTeX resume\n\n**GENERATE THE FINAL PRODUCTION-READY LaTeX RESUME IMMEDIATELY WITH NO PREAMBLE OR EXPLANATION.**\n\n**OUTPUT ONLY COMPILABLE LaTeX CODE.**"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        288,
+        -32
+      ],
+      "id": "f7d6703e-bcd4-4134-812c-e6456112a28e",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "nvidia/nemotron-nano-12b-v2-vl:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        288,
+        176
+      ],
+      "id": "b75361dc-83c4-4c01-9cc9-89c710205e32",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "zeq76a7qMRDpHVcT",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.jd_file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        48,
+        -320
+      ],
+      "id": "d233da52-8325-4e6d-93a6-3861149b4ef0",
+      "name": "Get a file",
+      "webhookId": "bdd1e7ff-8881-4dfa-8864-05f09ecd5f0a",
+      "credentials": {
+        "telegramApi": {
+          "id": "5yK1o3mERKD4I7sl",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        256,
+        -320
+      ],
+      "id": "f1ecda20-c543-4e18-8511-0e0203f67492",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b15c6e3f-e24f-40e2-bc63-ae7b85e9162f",
+              "name": "jd_text",
+              "value": "={{$json[\"text\"]}}",
+              "type": "string"
+            },
+            {
+              "id": "1a229ed3-e4c6-4a31-b902-6a33e2a8ba12",
+              "name": "resume_data",
+              "value": "{   \"personalInfo\": {     \"fullName\": \"M HARISH GAUTHAM\",     \"location\": \"Bengaluru, India\",     \"phone\": \"+91 7889289504\",     \"email\": \"harivelgm76@gmail.com\",     \"linkedin\": \"linkedin.com/harishy46\",     \"github\": \"github.com/harishy0406\"   },   \"summary\": \"Integrated M.Tech Software Engineering student skilled in Python, C++, and SQL with strong foundations in machine learning, LLMs, and system design. Experienced in building scalable AI/ML pipelines, RAG-based applications, and FastAPI backend systems. Focused on developing production-ready AI solutions for real-time analytics & data-driven decision-making.\",   \"skills\": {     \"programming\": [       \"Python\",       \"C++\",       \"SQL\",       \"Java\",       \"R\"     ],     \"corecs\": [       \"Data Structures & Algorithms\",       \"Operating Systems\",       \"Object-Oriented Programming\"     ],     \"aimlLlmEngineering\": [       \"Pandas\",       \"Scikit-learn\",       \"LLM APIs (OpenAI)\",       \"LangChain\",       \"LangGraph\",       \"RAG\",       \"AI Agents\"     ],     \"vectorSearchDatabases\": [       \"FAISS\",       \"Chroma\",       \"MySQL\",       \"PostgreSQL\",       \"MongoDB\"     ],     \"backendApis\": [       \"FastAPI\",       \"Flask\",       \"REST APIs\",       \"Async Programming (asyncio)\",       \"Microservices Architecture\"     ],     \"dataEngineering\": [       \"ETL Pipelines\",       \"SQL Analytics\",       \"Kafka\",       \"Spark\",       \"Hadoop\",       \"Hive\"     ],     \"systemsPerformance\": [       \"Threading\",       \"Multiprocessing\",       \"Caching (Redis)\",       \"Performance Optimization\"     ],     \"cloudDevops\": [       \"Linux\",       \"Docker\",       \"AWS (EC2)\",       \"CI/CD (GitHub Actions/Jenkins)\",       \"Git\",       \"Kubernetes\"     ],     \"tools\": [       \"Postman\",       \"Power BI\",       \"Pytest\",       \"n8n\",       \"Jira\",       \"JMeter\",       \"Selenium\",       \"SonarQube\"     ],     \"problemSolving\": \"Solved 100+ DSA problems on LeetCode and CodeChef\"   },   \"experience\": [     {       \"position\": \"Data Science Intern\",       \"company\": \"Sudaku CodeClause Pvt Ltd\",       \"location\": \"Pune\",       \"duration\": {         \"startMonth\": \"Dec\",         \"startYear\": 2025,         \"endMonth\": \"Jan\",         \"endYear\": 2026       },       \"department\": \"Backend & Data Systems\",       \"responsibilities\": [         {           \"title\": \"ML Pipelines & Data Processing\",           \"description\": \"Engineered end-to-end ML pipelines for Intelligent Fraud Detection and Heart Disease Risk Assessment with data preprocessing, feature engineering, and model evaluation on 1M+ records, achieving 91% accuracy (ROC-AUC: 0.94).\"         },         {           \"title\": \"ETL & API Development\",           \"description\": \"Designed and optimized ETL pipelines for large-scale data processing & built Flask REST APIs for real-time inference, containerized with Docker and deployed on AWS EC2, ensuring scalable data flow, reliable model serving, and efficient request handling.\"         },         {           \"title\": \"Backend Systems & CI/CD\",           \"description\": \"Collaborated with cross-functional teams to develop modular backend systems, optimize SQL queries, and integrate CI/CD pipelines and automated testing, improving code quality, deployment reliability, and system performance.\"         },         {           \"title\": \"Reporting & Insights\",           \"description\": \"Analyzed results and communicated insights through reports, supporting data-driven decisions and earned Letter of Recommendation.\"         }       ]     }   ],   \"projects\": [     {       \"title\": \"AI-powered Customer Support Copilot\",       \"technologies\": [         \"Python\",         \"FastAPI\",         \"LangChain\",         \"FAISS\",         \"OpenAI\",         \"SQL\"       ],       \"link\": \"LINK\",       \"highlights\": [         {           \"title\": \"RAG System Implementation\",           \"description\": \"Built an LLM-powered customer support system using RAG pipelines (chunking, embeddings, vector search) to answer queries from knowledge bases, integrating OpenAI APIs for contextual responses with optimized retrieval and low-latency performance.\"         },         {           \"title\": \"FastAPI Integration\",           \"description\": \"Developed FastAPI-based async APIs integrating OpenAI LLMs for query handling, summarization, and response generation, enabling scalable request processing with optimized retrieval workflows and efficient API performance.\"         },         {           \"title\": \"Performance Optimization\",           \"description\": \"Implemented caching (Redis) and performance tuning to reduce response latency, with testing, logging, and modular backend design for scalable deployment.\"         }       ]     },     {       \"title\": \"Smart Legal Document Intelligence System\",       \"technologies\": [         \"Python\",         \"FastAPI\",         \"LangChain\",         \"Chroma\",         \"OpenAI\"       ],       \"link\": \"LINK\",       \"highlights\": [         {           \"title\": \"RAG-based Document Processing\",           \"description\": \"Developed a RAG-based system to process legal PDFs for semantic search, summarization, and clause extraction.\"         },         {           \"title\": \"Vector DB Integration\",           \"description\": \"Built LLM-powered pipelines using OpenAI APIs and vector DB (Chroma) for contextual querying and retrieval.\"         },         {           \"title\": \"Agentic Workflows\",           \"description\": \"Designed agentic workflows with n8n to automate document processing, risk detection, and report generation.\"         }       ]     },     {       \"title\": \"Agentic AI Task Automation System\",       \"technologies\": [         \"Python\",         \"LangGraph\",         \"n8n\",         \"OpenAI\",         \"FastAPI\"       ],       \"link\": \"LINK\",       \"highlights\": [         {           \"title\": \"Multi-step Workflow Orchestration\",           \"description\": \"Built an agent-based automation system using LangGraph and LLM APIs to orchestrate multi-step workflows for task execution.\"         },         {           \"title\": \"Async Service Integration\",           \"description\": \"Integrated FastAPI-based async services for real-time task handling, API orchestration, and external system integration.\"         },         {           \"title\": \"Pipeline Optimization\",           \"description\": \"Implemented modular pipelines with logging, testing, and performance optimization for reliable AI workflow execution.\"         }       ]     },     {       \"title\": \"Real-Time AI Analytics & Alerting System\",       \"technologies\": [         \"Python\",         \"Kafka\",         \"FastAPI\",         \"Redis\",         \"SQL\"       ],       \"link\": \"LINK\",       \"highlights\": [         {           \"title\": \"Real-time Stream Processing\",           \"description\": \"Developed a real-time analytics system using Kafka streams and ML models to detect anomalies in high-volume data pipelines.\"         },         {           \"title\": \"Low-latency Alerting\",           \"description\": \"Built FastAPI-based async APIs with Redis caching for low-latency alerts, efficient data retrieval and scalable data processing.\"         }       ]     }   ],   \"awards\": [     {       \"title\": \"1st Prize — Prince iSOLVE National Hackathon\",       \"year\": 2026,       \"projectName\": \"MapMyWaste\",       \"description\": \"Led development of MapMyWaste, an AI-powered geospatial waste detection system using CNN-based classification, feature extraction, and K-Means clustering with EXIF GPS data to identify hotspots; built data pipelines, inference workflows, and APIs for automated detection, spatial analysis, optimized routing, and real-time data processing.\"     }   ],   \"education\": [     {       \"degree\": \"Integrated M.Tech in Software Engineering\",       \"institution\": \"Vellore Institute of Technology\",       \"location\": \"Vellore, Tamil Nadu\",       \"duration\": {         \"startYear\": 2022,         \"endYear\": 2027       },       \"cgpa\": 8.19,       \"relevantCoursework\": [         \"Machine Learning\",         \"Data Analytics\",         \"Data Structures & Algorithms\",         \"DBMS\",         \"Operating Systems\",         \"Computer Networks\",         \"Distributed Systems\",         \"Software Engineering\"       ]     },     {       \"degree\": \"Higher Secondary (Science + Computer Science)\",       \"institution\": \"Kendriya Vidyalaya No. 4 Mamoon Cantt\",       \"location\": \"Pathankot, Punjab\",       \"duration\": {         \"startYear\": 2020,         \"endYear\": 2021       },       \"percentage\": 89.6     }   ] }",
+              "type": "object"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        464,
+        -320
+      ],
+      "id": "f5cb50ff-733a-4243-a577-091247f99c63",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "824a8b21-f51a-4ad9-a296-16031c14c189",
+              "leftValue": "={{ $json.jd_file_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -128,
+        -128
+      ],
+      "id": "24e4bd53-5fe0-45d8-aa3d-2db44886deae",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "content": "**Hire Me Pls Bot 🤖🚀 is an AI-powered Telegram bot that generates ATS-optimized personalized LaTeX resumes from Job Descriptions using AI agents, keyword optimization, and smart resume tailoring 💼**\n\n~ M Harish Gautham",
+        "height": 144,
+        "width": 336,
+        "color": "#70EB1E"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -400,
+        -320
+      ],
+      "typeVersion": 1,
+      "id": "2d235cda-9515-426f-9e56-fb43eab385bc",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send a document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "f459d373-d7c6-4fc8-a4ea-6fc3946dd76f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4f4fbc9f7bca32bebbe3ed8238476e90d647868cf3a9de4ccc2cc0beabdbe6e7"
+  },
+  "id": "Z3lpRGS0HjkuQWCN",
+  "tags": []
+}
